@@ -21,15 +21,16 @@ import frc.robot.lib.SwerveModule;
 public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
 
-  private final Translation2d m_frontLeftLocation = new Translation2d(Constants.LENGTH_TO_WHEELS, Constants.WIDTH_TO_WHEELS);
-  private final Translation2d m_frontRightLocation = new Translation2d(Constants.LENGTH_TO_WHEELS, -Constants.WIDTH_TO_WHEELS);
-  private final Translation2d m_backLeftLocation = new Translation2d(-Constants.LENGTH_TO_WHEELS, Constants.WIDTH_TO_WHEELS);
-  private final Translation2d m_backRightLocation = new Translation2d(-Constants.LENGTH_TO_WHEELS, -Constants.WIDTH_TO_WHEELS);
+  private final Translation2d m_frontLeftLocation = Constants.m_frontLeftLocation;
+  private final Translation2d m_frontRightLocation = Constants.m_frontRightLocation;
+  private final Translation2d m_backLeftLocation = Constants.m_backLeftLocation;
+  private final Translation2d m_backRightLocation = Constants.m_backRightLocation;
   
-  private final SwerveModule m_frontLeft = new SwerveModule(this, 1, 2);
-  private final SwerveModule m_frontRight = new SwerveModule(this, 3, 4);
-  private final SwerveModule m_backLeft = new SwerveModule(this, 5, 6);
-  private final SwerveModule m_backRight = new SwerveModule(this, 7, 8);
+  //REPLACE NUMBERS WITH ACTUAL VALUES: drive_port (CAN ID), turning port (PWM on RIO), encoder ports (DIO on RIO)
+  private final SwerveModule m_frontLeft = new SwerveModule(this, 1, 2, 0, 1);
+  private final SwerveModule m_frontRight = new SwerveModule(this, 3, 4, 2, 3);
+  private final SwerveModule m_backLeft = new SwerveModule(this, 5, 6, 4, 5);
+  private final SwerveModule m_backRight = new SwerveModule(this, 7, 8, 6, 7);
   
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP); 
 
@@ -41,7 +42,7 @@ public class Drivetrain extends SubsystemBase {
     new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
 
   ShuffleboardTab tab;
-  public NetworkTableEntry P, I, D, Iz, FF, MaxOutput, mxRPM, mxVel, mxAcc, Err, P2, I2, D2, Iz2, FF2, MaxOutput2, mxRPM2, mxVel2, mxAcc2, Err2, driveSpeed, turnPos;
+  public NetworkTableEntry P, I, D, Iz, FF, MaxOutput, mxRPM, mxVel, mxAcc, Err, P2, I2, D2;
   
   public Drivetrain() {
     m_gyro.reset();
@@ -54,6 +55,7 @@ public class Drivetrain extends SubsystemBase {
     m_frontRight.updatePID();
     m_backLeft.updatePID();
     m_backRight.updatePID();
+
   }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -95,12 +97,5 @@ public class Drivetrain extends SubsystemBase {
     P2 = tab.addPersistent("P2", Constants.kP).getEntry();
     I2 = tab.addPersistent("I2", Constants.kI).getEntry();
     D2 = tab.addPersistent("D2", Constants.kD).getEntry(); 
-    Iz2 = tab.addPersistent("Iz2", Constants.kIz).getEntry();
-    FF2 = tab.addPersistent("FF2", Constants.kFF).getEntry();
-    MaxOutput2 = tab.addPersistent("Max Output2", Constants.kMaxOutput).getEntry();
-    mxRPM2 = tab.addPersistent("Max RPM2", Constants.maxRPM).getEntry();
-    mxVel2 = tab.addPersistent("Max Velocity2", Constants.maxVel).getEntry();
-    mxAcc2 = tab.addPersistent("Max Acceleration2", Constants.maxAcc).getEntry(); 
-    Err2 = tab.addPersistent("Acceptable Error2", Constants.ERROR).getEntry();
   }
 }

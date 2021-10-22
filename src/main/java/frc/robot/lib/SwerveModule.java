@@ -31,8 +31,9 @@ public class SwerveModule {
     private CANPIDController m_drivePIDController;
     private PIDController m_turningPIDController;
 
-    private final double MAX_VOLTS = 4.95;
     private final int driveChannel;
+
+    private final Drivetrain m_drive;
 
     public SwerveModule(Drivetrain d, int driveChannel, int turnChannel, int encoder1, int encoder2){
         speedMotor = new CANSparkMax(driveChannel, MotorType.kBrushless);
@@ -54,14 +55,24 @@ public class SwerveModule {
         m_drivePIDController.setD(0);
 
         m_turningPIDController = new PIDController(1.0/90.0,0,0);
+
         //m_turningPIDController.enableContinuousInput(-180, 180);
 
         this.driveChannel = driveChannel;
+        m_drive = d;
     }
 
     public void drive(double speed, double angle){
         //Angles to degrees to make code more readable
         angle = Math.toDegrees(angle);
+
+        //Inversion control
+        double azimuthError = Math.abs(Math.IEEEremainder(m_turningEncoder.get(), 360) - angle);
+        if(azimuthError > 90){
+            angle = angle > 0 ? angle - 180 : angle + 180;
+            speed *= -1;
+        }
+
         double output = m_turningPIDController.calculate(m_turningEncoder.get(), angle);
 
         //Smartdashboard debug info
@@ -71,7 +82,8 @@ public class SwerveModule {
         SmartDashboard.putNumber(getSide(driveChannel) + " Out", -output);
         
         //Set Motor powers
-        m_drivePIDController.setReference(speed, ControlType.kVelocity);
+        m_drivePIDController.setReference(speed * Constants.MAX_VELOCITY, ControlType.kVelocity);
+
         angleMotor.set(-output);
     }
 

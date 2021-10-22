@@ -103,6 +103,10 @@ public class Drivetrain extends SubsystemBase {
     return Math.IEEEremainder(navx.getAngle(), 360) * -1;
   }
 
+  public double getAngle(){
+    return navx.getAngle();
+  }
+  
   public void setIdleMode(IdleMode mode){
     m_frontLeft.setIdleMode(mode);
     m_frontRight.setIdleMode(mode);

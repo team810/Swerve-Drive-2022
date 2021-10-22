@@ -22,8 +22,8 @@ public final class Constants {
 
     public static final double GEAR_RATIO = 6.67;
     public static final double CIRCUMFERENCE = 4 * Math.PI;
-
-
+    public static final double MAX_VELOCITY = 3; //units: m/s
+ 
     //Port Numbers
     // CAN ID
     public static final int FRONT_RIGHT_CAN = 1;

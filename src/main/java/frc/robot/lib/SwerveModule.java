@@ -7,8 +7,9 @@ package frc.robot.lib;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.ControlType;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Spark;
@@ -59,18 +60,23 @@ public class SwerveModule {
     }
 
     public void drive(double speed, double angle){
+        //Angles to degrees to make code more readable
         angle = Math.toDegrees(angle);
+        double output = m_turningPIDController.calculate(m_turningEncoder.get(), angle);
 
+        //Smartdashboard debug info
         SmartDashboard.putNumber(getSide(driveChannel) + " Speed", speed);
         SmartDashboard.putNumber(getSide(driveChannel) + " Angle (Deg)", angle);
         SmartDashboard.putNumber(getSide(driveChannel) + " Angle (Reported)", m_turningEncoder.get());
-
-        m_drivePIDController.setReference(speed, ControlType.kVelocity);
-
-        double output = m_turningPIDController.calculate(m_turningEncoder.get(), angle);
         SmartDashboard.putNumber(getSide(driveChannel) + " Out", -output);
-
+        
+        //Set Motor powers
+        m_drivePIDController.setReference(speed, ControlType.kVelocity);
         angleMotor.set(-output);
+    }
+
+    public void setIdleMode(IdleMode mode){
+        speedMotor.setIdleMode(mode);
     }
 
     private String getSide(int driveChannel){

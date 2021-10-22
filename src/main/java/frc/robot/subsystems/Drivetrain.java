@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -89,5 +90,16 @@ public class Drivetrain extends SubsystemBase {
     m_backLeft.drive(backLeftSpeed, backLeftAngle);
     m_frontRight.drive(frontRightSpeed, frontRightAngle);
     m_frontLeft.drive(frontLeftSpeed, frontLeftAngle);
+  }
+
+  public double getHeading(){
+    return Math.IEEEremainder(navx.getAngle(), 360) * -1;
+  }
+
+  public void setIdleMode(IdleMode mode){
+    m_frontLeft.setIdleMode(mode);
+    m_frontRight.setIdleMode(mode);
+    m_backLeft.setIdleMode(mode);
+    m_backRight.setIdleMode(mode);
   }
 }

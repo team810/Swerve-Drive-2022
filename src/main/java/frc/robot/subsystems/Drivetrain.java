@@ -22,7 +22,7 @@ public class Drivetrain extends SubsystemBase {
 
 
   //NavX
-  public final AHRS navx = new AHRS(SPI.Port.kMXP); // change to I2C if not working
+  private final AHRS navx = new AHRS(SPI.Port.kMXP); // change to I2C if not working
   
   public Drivetrain() {
     //Drivetrain, drive motor CAN ID, Turn motor PWM port, Encoder port 1, Encoder port 2
@@ -57,9 +57,16 @@ public class Drivetrain extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void drive(double xSpeed, double ySpeed, double rot){ //All values have to be between -1 and 1
+  public void drive(double xSpeed, double ySpeed, double rot, boolean isFieldRelative){ //All values have to be between -1 and 1
     double r = Math.sqrt ((Constants.LENGTH_TO_WHEELS * Constants.LENGTH_TO_WHEELS) + (Constants.WIDTH_TO_WHEELS * Constants.WIDTH_TO_WHEELS));
+    
+    //FWD, STR speed adjustments
     ySpeed *= -1;
+    if(isFieldRelative){
+      double chassisAngle = Math.toRadians(navx.getAngle() % 360);
+      ySpeed = ySpeed * Math.cos(chassisAngle) + xSpeed * Math.sin(chassisAngle);
+      xSpeed = xSpeed * Math.cos(chassisAngle) + ySpeed * Math.sin(chassisAngle);
+    }
 
     double a = xSpeed - rot * (Constants.LENGTH_TO_WHEELS / r);
     double b = xSpeed + rot * (Constants.LENGTH_TO_WHEELS / r);

@@ -36,7 +36,8 @@ public class RobotContainer {
         ()->m_drive.drive(
           left.getRawAxis(0),
           left.getRawAxis(1),
-          right.getRawAxis(2)
+          right.getRawAxis(2),
+          true
         )
         , m_drive)
     );
